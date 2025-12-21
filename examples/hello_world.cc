@@ -15,14 +15,15 @@
 #include <string.h>
 
 // UTF-8 encoded "你好" (Hello in Chinese)
+// Unicode code points: U+4F60 (你) U+597D (好)
 const char hello_message[] = "\xe4\xbd\xa0\xe5\xa5\xbd";
 constexpr int BUFFER_SIZE = sizeof(hello_message);
 char output_buffer[BUFFER_SIZE] __attribute__((section(".data")));
 
 int main() {
   // Copy the hello message to output buffer
-  memcpy(output_buffer, hello_message, sizeof(hello_message));
+  memcpy(output_buffer, hello_message, BUFFER_SIZE);
   
-  // Return the length of the message
-  return sizeof(hello_message) - 1;  // -1 to exclude null terminator
+  // Return the length of the message (excluding null terminator)
+  return BUFFER_SIZE - 1;
 }
