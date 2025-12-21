@@ -18,7 +18,7 @@
 - 前端 LMUL/VLEN 配置：`hdl/verilog/rvv/design/RvvFrontEnd.sv`
 - 软件示例（int8×int8→int16→int32 累加 matmul）：`tests/cocotb/rvv/ml_ops/rvv_matmul.cc`
 
-## ASCII 示意图
+## ASCII / 矢量示意
 单通道内部（乘法网格 + 宽化/累加）：
 ```
 128b vs2 ----┐          128b vs1 ----┐
@@ -38,9 +38,49 @@ RS -> MAC lane0 (64×mul8) -> ROB
 RS -> MAC lane1 (64×mul8) -> ROB
 ```
 
+按 SEW 展开的“网格”形态（每条通道拆成 16B，再以 4×4×4 方式映射到 mul8 单元）：
+```
+vs2 bytes: [b15 b14 b13 b12] [b11 b10 b9 b8] [b7 b6 b5 b4] [b3 b2 b1 b0]
+vs1 bytes: [a15 a14 a13 a12] [a11 a10 a9 a8] [a7 a6 a5 a4] [a3 a2 a1 a0]
+
+  z=0           z=1           z=2           z=3         (每个 z 是 4×4 片)
+┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐
+│mul8×16 │   │mul8×16 │   │mul8×16 │   │mul8×16 │   ← 共 64 个 mul8
+└────────┘   └────────┘   └────────┘   └────────┘
+     \           \            \           \
+      └── 64×16b 乘积 ──> 宽化/累加/舍入 ──> VRF
+```
+
 ## 运行/观测建议
 - 仿真：使用 Verilator SystemC 顶层加载 ELF，结合 `--trace`/`--instr_trace` 观测 MAC 通道握手与产出。
 - cocotb：运行 `rvv_matmul` 用例可在波形中看到两条通道的并行乘加；配合 VRF 写回信号验证结果。
+
+## 波形抓取步骤（Verilator SystemC）
+1) 编译仿真顶层（如已完成可跳过）：
+```bash
+bazel build //tests/verilator_sim:core_mini_axi_sim
+```
+2) 运行并打开波形：
+```bash
+# 生成 VCD 与指令追踪（输出在 bazel-bin/tests/verilator_sim）
+bazel-bin/tests/verilator_sim/core_mini_axi_sim \
+  --binary bazel-out/k8-fastbuild/bin/examples/coralnpu_v2_hello_world_add_floats.elf \
+  --trace --instr_trace
+
+# 用 gtkwave 观测（假定已安装）
+gtkwave bazel-bin/tests/verilator_sim/core_mini_axi_sim.vcd &
+```
+3) 建议添加的信号组：
+```
+top.u_core_mini_axi.u_rvv_core.u_backend.u_mulmac.
+  rs2mac_uop_valid[1:0]
+  mac2rs_uop_ready[1:0]
+  mac_stg0_vld_en[1:0]
+  mac_stg0_data_en[1:0]
+  mac2rob_uop_valid[1:0]
+  ex2rob_data[*].rob_entry (或 wr_mul2rob)
+```
+4) 若关注单个通道内部产出，可展开 `u_mac0` / `u_mac1`，查看 `mac8_out_d1`、`mac_rslt_*` 与 `rs2mac_uop_valid_d1` 对齐关系。
 
 ## 备注
 当前仓库未提供单独的 PDF/图片规格书，本页与源码是最新的事实标准；若需要图形化示意，可在此基础上补充。
