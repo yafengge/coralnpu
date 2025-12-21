@@ -16,13 +16,12 @@
 
 // UTF-8 encoded "你好" (Hello in Chinese)
 const char hello_message[] = "\xe4\xbd\xa0\xe5\xa5\xbd";
-char output_buffer[16] __attribute__((section(".data")));
+constexpr int BUFFER_SIZE = sizeof(hello_message);
+char output_buffer[BUFFER_SIZE] __attribute__((section(".data")));
 
 int main() {
   // Copy the hello message to output buffer
-  for (int i = 0; i < sizeof(hello_message); i++) {
-    output_buffer[i] = hello_message[i];
-  }
+  memcpy(output_buffer, hello_message, sizeof(hello_message));
   
   // Return the length of the message
   return sizeof(hello_message) - 1;  // -1 to exclude null terminator
