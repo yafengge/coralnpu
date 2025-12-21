@@ -44,5 +44,14 @@ bazel build //tests/verilator_sim:core_mini_axi_sim
 bazel-bin/tests/verilator_sim/core_mini_axi_sim --binary bazel-out/k8-fastbuild-ST-dd8dc713f32d/bin/examples/coralnpu_v2_hello_world_add_floats.elf
 ```
 
+## Documentation
+
+* [Overview](doc/overview.md) - Coral NPU architecture overview
+* [Integration Guide](doc/integration_guide.md) - Guide for integrating Coral NPU into systems
+* [Simulation](doc/simulation.md) - Running simulations
+* [Writing Coral NPU Programs](doc/tutorials/writing_coralnpu_programs.md) - Tutorial on writing programs
+* [Linux Sandbox](doc/linux_sandbox.md) - Understanding Linux sandbox concepts (Chinese)
+* [Linux Sandbox](doc/linux_sandbox_en.md) - Understanding Linux sandbox concepts (English)
+
 
 ![](doc/images/Coral_Logo_200px-2x.png)
