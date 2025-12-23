@@ -35,13 +35,17 @@ Coral NPU offers the following top-level feature set:
 bazel run //tests/cocotb:core_mini_axi_sim_cocotb
 
 # Build a binary
+bazel build //examples:coralnpu_v2_hello_world
+# Or build the float addition example
 bazel build //examples:coralnpu_v2_hello_world_add_floats
 
 # Build the Simulator (non-RVV for shorter build time):
 bazel build //tests/verilator_sim:core_mini_axi_sim
 
 # Run the binary on the simulator:
-bazel-bin/tests/verilator_sim/core_mini_axi_sim --binary bazel-out/k8-fastbuild-ST-dd8dc713f32d/bin/examples/coralnpu_v2_hello_world_add_floats.elf
+bazel-bin/tests/verilator_sim/core_mini_axi_sim --binary bazel-out/k8-fastbuild-ST-dd8dc713f32d/bin/examples/coralnpu_v2_hello_world.elf
+# Or run the float addition example:
+# bazel-bin/tests/verilator_sim/core_mini_axi_sim --binary bazel-out/k8-fastbuild-ST-dd8dc713f32d/bin/examples/coralnpu_v2_hello_world_add_floats.elf
 ```
 
 
