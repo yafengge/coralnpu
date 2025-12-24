@@ -16,3 +16,9 @@ tests/uvm/sim_work
 tests/uvm/vc_hdrs.h
 # python
 __pycache__
+
+# Local logs
+logs/
+# VS Code workspace config
+.vscode/c_cpp_properties.json
+.vscode/settings.json
