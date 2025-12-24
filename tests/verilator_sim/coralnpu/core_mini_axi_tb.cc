@@ -288,7 +288,7 @@ absl::Status CoreMiniAxi_tb::LoadElfSync(const std::string& file_name) {
 absl::Status CoreMiniAxi_tb::LoadElfAsync(const std::string& file_name) {
   absl::MutexLock lock(&transfer_queue_mtx_);
   int fd = open(file_name.c_str(), 0);
-  CHECK(fd > 0);
+  CHECK(fd >= 0);
   struct stat sb;
   CHECK(fstat(fd, &sb) == 0);
   auto file_size = sb.st_size;

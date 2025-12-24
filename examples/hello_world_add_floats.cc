@@ -20,7 +20,7 @@ float output[8] __attribute__((section(".data")));
 
 int main() {
   for (int i = 0; i < 8; i++) {
-    output[i] = input1[i] + input2[i];
+    output[i] = input1[i]  +  input2[i];
   }
   return 0;
 }
